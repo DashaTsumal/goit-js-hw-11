@@ -1,4 +1,3 @@
-// src/js/pixabay-api.js
 export function fetchParams(item) {
   const API_KEY = '44767976-5c84653ee99974363117d019c';
 

@@ -1,26 +1,33 @@
-// src/js/main.js
-import { fetchParams } from './pixabay-api.js';
-import { renderGallery, showError, showNoResults } from './render-functions.js';
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
+import {
+  inputPictures,
+  errorParams,
+  showLoading,
+  hideLoading,
+} from './js/render-functions';
+import { fetchParams } from './js/pixabay-api';
 
-document.querySelector('.search-form').addEventListener('submit', event => {
-  event.preventDefault();
-  const searchQuery = event.currentTarget.elements.query.value.trim();
-  if (searchQuery === '') {
-    showError('Please enter a search term.');
-    return;
+const formSearch = document.querySelector('.search-form');
+const gallery = document.querySelector('.gallery-container');
+const loading = document.querySelector('.loading');
+
+formSearch.addEventListener('submit', getPictureByValue);
+
+function getPictureByValue(evt) {
+  evt.preventDefault();
+  const form = evt.currentTarget;
+
+  const inputValue = form.elements.insert.value.toLowerCase().trim();
+
+  if (inputValue === '') {
+    hideLoading();
+    return errorParams();
   }
 
-  fetchParams(searchQuery)
-    .then(data => {
-      if (data.hits.length === 0) {
-        showNoResults();
-      } else {
-        renderGallery(data.hits);
-        const lightbox = new SimpleLightbox('.gallery a');
-        lightbox.refresh();
-      }
-    })
-    .catch(error => showError(`Error: ${error.message}`));
-});
+  showLoading();
+  gallery.innerHTML = '';
+
+  fetchParams(inputValue)
+    .then(inputPictures)
+    .catch(errorParams)
+    .finally(() => form.reset());
+}
