@@ -8,17 +8,19 @@ import { fetchParams } from './js/pixabay-api';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+// Створення екземпляра SimpleLightbox в глобальній області
+let lightbox = new SimpleLightbox('.gallery a');
+
 const formSearch = document.querySelector('.search-form');
 const gallery = document.querySelector('.gallery-container');
 const loading = document.querySelector('.loading');
-
-let lightbox;  // Глобальний екземпляр SimpleLightbox
 
 formSearch.addEventListener('submit', getPictureByValue);
 
 function getPictureByValue(evt) {
   evt.preventDefault();
   const form = evt.currentTarget;
+
   const inputValue = form.elements.insert.value.toLowerCase().trim();
 
   if (inputValue === '') {
@@ -32,13 +34,7 @@ function getPictureByValue(evt) {
   fetchParams(inputValue)
     .then(pictures => {
       inputPictures(pictures);
-      
-      // Ініціалізація або оновлення екземпляра SimpleLightbox
-      if (!lightbox) {
-        lightbox = new SimpleLightbox('.gallery-container a');
-      } else {
-        lightbox.refresh();
-      }
+      lightbox.refresh(); // Оновлення екземпляра SimpleLightbox після вставки нових елементів
     })
     .catch(errorParams)
     .finally(() => {
